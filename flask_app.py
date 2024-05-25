@@ -3,7 +3,7 @@ from elasticsearch_client import connect_elasticsearch
 
 app = Flask(__name__)
 
-def search_trendyol_index(es, query, index_name="trendyol"):
+def search_trendyol_index(es, query, index_name="trendyol_trendyol"):
     search_param = {
         "query": {
             "bool":{
@@ -26,7 +26,7 @@ def search_trendyol_index(es, query, index_name="trendyol"):
         results = []
         for hit in response['hits']['hits']:
             source = hit['_source']
-            source['_id'] = hit['_id']  # Elasticsearch ID'sini kaydediyoruz
+            source['_id'] = hit['_id']
             results.append(source)
         return results
     except Exception as e:
@@ -54,7 +54,7 @@ def add_data():
         return jsonify({"error": "Elasticsearch bağlantısı kurulamadı."}), 500
 
     try:
-        response = es.index(index="trendyol", document=data)
+        response = es.index(index="trendyol_trendyol", document=data)
         if 'result' in response and response['result'] == 'created':
             return jsonify({"message": "Veri başarıyla eklendi.", "response": response}), 200
         else:
@@ -87,7 +87,7 @@ def delete_data(id):
         return jsonify({"error": "Elasticsearch bağlantısı kurulamadı."}), 500
 
     try:
-        response = es.delete(index="trendyol", id=id)
+        response = es.delete(index="trendyol_trendyol", id=id)
         if 'result' in response and response['result'] == 'deleted':
             return jsonify({"message": "Veri başarıyla silindi.", "response": response}), 200
         else:
@@ -105,7 +105,7 @@ def update_data(id):
     if request.method == 'POST':
         data = request.form.to_dict()
         try:
-            response = es.update(index="trendyol", id=id, body={"doc": data})
+            response = es.update(index="trendyol_trendyol", id=id, body={"doc": data})
             if 'result' in response and response['result'] == 'updated':
                 return redirect(url_for('index'))
             else:
@@ -115,7 +115,7 @@ def update_data(id):
             return jsonify({"error": f"Veri güncellenirken bir hata oluştu: {e}"}), 500
     else:
         try:
-            response = es.get(index="trendyol", id=id)
+            response = es.get(index="trendyol_trendyol", id=id)
             if response['found']:
                 return render_template('update_data.html', data=response['_source'], id=id)
             else:

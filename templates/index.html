@@ -34,7 +34,7 @@
             border: 1px solid #ccc;
             padding: 10px;
             margin: 5px 0;
-            position: relative; /* İlgili butonları pozisyonlandırmak için */
+            position: relative;
         }
         .action-buttons {
             position: absolute;
@@ -48,6 +48,12 @@
             text-decoration: none;
             color: blue;
             vertical-align: top;
+        }
+        .result-image {
+            max-width: 100px;
+            max-height: 100px;
+            display: block;
+            margin: 0 auto 10px;
         }
     </style>
 </head>
@@ -77,6 +83,7 @@
                             const itemDiv = document.createElement('div');
                             itemDiv.className = 'result-item';
                             itemDiv.innerHTML = `
+                                <img src="${item.Image}" alt="${item.Name}" class="result-image">
                                 <p><strong>Price:</strong> ${item.Price}</p>
                                 <p><strong>Name:</strong> ${item.Name}</p>
                                 <p><strong>Title:</strong> ${item.Title}</p>
@@ -103,8 +110,11 @@
                             alert(data.message);
                             window.location.reload();
                         } else {
-                            alert(data.error);
+                            alert('Veri silinirken bir hata oluştu.');
                         }
+                    })
+                    .catch(error => {
+                        console.error('Veri silinirken bir hata oluştu:', error);
                     });
             }
         }
