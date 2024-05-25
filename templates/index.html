@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elasticsearch Trendyol Arama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            text-align: center;
+            padding-top: 50px;
+        }
+        .search-bar {
+            width: 80%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        .search-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            vertical-align: top;
+        }
+        .results {
+            margin-top: 20px;
+        }
+        .result-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 5px 0;
+            position: relative; /* İlgili butonları pozisyonlandırmak için */
+        }
+        .action-buttons {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        .add-data-link {
+            display: inline-block;
+            margin-left: 20px;
+            font-size: 16px;
+            text-decoration: none;
+            color: blue;
+            vertical-align: top;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Trendyol Arama</h1>
+        <input type="text" id="searchQuery" class="search-bar" placeholder="Aramak istediğiniz kelimeyi girin..." onkeydown="if (event.keyCode === 13) { event.preventDefault(); performSearch(); }">
+        <button onclick="performSearch()" class="search-button">Ara</button>
+        <a href="/add_data" class="add-data-link">Veri Ekle</a>
+        <div class="results" id="results"></div>
+    </div>
+
+    <script>
+        function performSearch() {
+            const query = document.getElementById('searchQuery').value;
+            const searchUrl = `/search?query=${query}`;
+
+            fetch(searchUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = '';
+                    if (data.message) {
+                        resultsDiv.innerHTML = `<p>${data.message}</p>`;
+                    } else {
+                        data.forEach(item => {
+                            const itemDiv = document.createElement('div');
+                            itemDiv.className = 'result-item';
+                            itemDiv.innerHTML = `
+                                <p><strong>Price:</strong> ${item.Price}</p>
+                                <p><strong>Name:</strong> ${item.Name}</p>
+                                <p><strong>Title:</strong> ${item.Title}</p>
+                                <div class="action-buttons">
+                                    <button onclick="deleteData('${item._id}')" class="delete-button">Sil</button>
+                                    <a href="/update/${item._id}" class="update-button">Güncelle</a>
+                                </div>
+                            `;
+                            resultsDiv.appendChild(itemDiv);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Arama sırasında bir hata oluştu:', error);
+                });
+        }
+
+        function deleteData(id) {
+            if (confirm("Bu veriyi silmek istediğinizden emin misiniz?")) {
+                fetch(`/delete/${id}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.message) {
+                            alert(data.message);
+                            window.location.reload();
+                        } else {
+                            alert(data.error);
+                        }
+                    });
+            }
+        }
+    </script>
+</body>
+</html>
