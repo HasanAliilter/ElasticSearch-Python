@@ -42,27 +42,6 @@ def index():
     results = search_trendyol_index(es, "")
     return render_template('index.html', results=results)
 
-@app.route('/add_data')
-def add_data_page():
-    return render_template('add_data.html')
-
-@app.route('/add', methods=['POST'])
-def add_data():
-    data = request.json
-    es = connect_elasticsearch()
-    if not es:
-        return jsonify({"error": "Elasticsearch bağlantısı kurulamadı."}), 500
-
-    try:
-        response = es.index(index="trendyol_trendyol", document=data)
-        if 'result' in response and response['result'] == 'created':
-            return jsonify({"message": "Veri başarıyla eklendi.", "response": response}), 200
-        else:
-            return jsonify({"error": "Veri eklenirken beklenmedik bir yanıt alındı.", "response": response}), 500
-    except Exception as e:
-        print(f"Veri eklerken bir hata oluştu: {e}")
-        return jsonify({"error": f"Veri eklenirken bir hata oluştu: {e}"}), 500
-
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('query', '')
@@ -125,4 +104,4 @@ def update_data(id):
             return jsonify({"error": f"Veri getirilirken bir hata oluştu: {e}"}), 500
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='localhost', port=5000, debug=True)
