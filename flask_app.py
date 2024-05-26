@@ -3,23 +3,35 @@ from elasticsearch_client import connect_elasticsearch
 
 app = Flask(__name__)
 
-def search_trendyol_index(es, query, index_name="trendyol_trendyol"):
+def search_trendyol_index(es, query, min_price=None, max_price=None, index_name="trendyol_trendyol"):
+    query_terms = query.split()
+
+    must_queries = [
+        {
+            "bool": {
+                "should": [
+                    {"match": {"Title": term}},
+                    {"match": {"Name": term}},
+                ]
+            }
+        } for term in query_terms
+    ]
+
+    if min_price is not None or max_price is not None:
+        price_range_query = {"range": {"Price": {}}}
+        if min_price is not None:
+            price_range_query["range"]["Price"]["gte"] = min_price
+        if max_price is not None:
+            price_range_query["range"]["Price"]["lte"] = max_price
+        must_queries.append(price_range_query)
+
     search_param = {
         "query": {
-            "bool":{
-                "must":[
-                    {"multi_match": {
-                "query": query,
-                "fields": ["Price", "Name", "Title"],
-                "operator":"and"
-                             
-            }
-            }
-            ]
-            
+            "bool": {
+                "must": must_queries
             }
         }
-    } 
+    }
 
     try:
         response = es.search(index=index_name, body=search_param, size=1000)
@@ -45,6 +57,12 @@ def index():
 @app.route('/search', methods=['GET'])
 def search():
     query = request.args.get('query', '')
+    min_price = request.args.get('minPrice')
+    max_price = request.args.get('maxPrice')
+
+    # Convert min_price and max_price to floats if they are provided
+    min_price = float(min_price) if min_price else None
+    max_price = float(max_price) if max_price else None
 
     if not query:
         return jsonify({"error": "Lütfen bir arama sorgusu girin."}), 400
@@ -53,7 +71,7 @@ def search():
     if not es:
         return jsonify({"error": "Elasticsearch bağlantısı kurulamadı."}), 500
 
-    results = search_trendyol_index(es, query)
+    results = search_trendyol_index(es, query, min_price, max_price)
     if not results:
         return jsonify({"message": "Hiçbir sonuç bulunamadı."}), 404
 

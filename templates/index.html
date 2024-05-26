@@ -14,7 +14,7 @@
             text-align: center;
             padding-top: 50px;
         }
-        .search-bar {
+        .search-bar, .price-input {
             width: 80%;
             padding: 10px;
             font-size: 16px;
@@ -61,6 +61,8 @@
     <div class="container">
         <h1>Trendyol Arama</h1>
         <input type="text" id="searchQuery" class="search-bar" placeholder="Aramak istediğiniz kelimeyi girin..." onkeydown="if (event.keyCode === 13) { event.preventDefault(); performSearch(); }">
+        <input type="number" id="minPrice" class="price-input" placeholder="Min Fiyat" onkeydown="if (event.keyCode === 13) { event.preventDefault(); performSearch(); }">
+        <input type="number" id="maxPrice" class="price-input" placeholder="Max Fiyat" onkeydown="if (event.keyCode === 13) { event.preventDefault(); performSearch(); }">
         <button onclick="performSearch()" class="search-button">Ara</button>
         <div class="results" id="results"></div>
     </div>
@@ -68,7 +70,9 @@
     <script>
         function performSearch() {
             const query = document.getElementById('searchQuery').value;
-            const searchUrl = `/search?query=${query}`;
+            const minPrice = document.getElementById('minPrice').value;
+            const maxPrice = document.getElementById('maxPrice').value;
+            const searchUrl = `/search?query=${query}&minPrice=${minPrice}&maxPrice=${maxPrice}`;
 
             fetch(searchUrl)
                 .then(response => response.json())
