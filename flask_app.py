@@ -3,7 +3,7 @@ from elasticsearch_client import connect_elasticsearch
 
 app = Flask(__name__)
 
-def search_trendyol_index(es, query, min_price=None, max_price=None, index_name="trendyol_trendyol"):
+def search_trendyol_index(es, query, min_price=None, max_price=None, index_name="trendyol_trendyol2"):
     query_terms = query.split()
 
     must_queries = [
@@ -89,7 +89,7 @@ def add_data():
         return jsonify({"error": "Elasticsearch bağlantısı kurulamadı."}), 500
 
     try:
-        response = es.index(index="trendyol_trendyol", document=data)
+        response = es.index(index="trendyol_trendyol2", document=data)
         return jsonify({"message": "Veri başarıyla eklendi."}), 200
     except Exception as e:
         print(f"Veri eklerken bir hata oluştu: {e}")
@@ -103,7 +103,7 @@ def delete_data(id):
         return jsonify({"error": "Elasticsearch bağlantısı kurulamadı."}), 500
 
     try:
-        response = es.delete(index="trendyol_trendyol", id=id)
+        response = es.delete(index="trendyol_trendyol2", id=id)
         return jsonify({"message": "Veri başarıyla silindi."}), 200
     except Exception as e:
         print(f"Veri silinirken bir hata oluştu: {e}")
@@ -119,7 +119,7 @@ def update_data(id):
     if request.method == 'POST':
         data = request.form.to_dict()
         try:
-            response = es.update(index="trendyol_trendyol", id=id, body={"doc": data})
+            response = es.update(index="trendyol_trendyol2", id=id, body={"doc": data})
             if 'result' in response and response['result'] == 'updated':
                 return redirect(url_for('index'))
             else:
@@ -129,7 +129,7 @@ def update_data(id):
             return jsonify({"error": f"Veri güncellenirken bir hata oluştu: {e}"}), 500
     else:
         try:
-            response = es.get(index="trendyol_trendyol", id=id)
+            response = es.get(index="trendyol_trendyol2", id=id)
             if response['found']:
                 return render_template('update_data.html', data=response['_source'], id=id)
             else:

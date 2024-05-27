@@ -6,7 +6,7 @@ es = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
 csv_file_path = '../web_scraping/Trendyol_Trendyol.csv'
 df = pd.read_csv(csv_file_path)
 
-index_name = 'trendyol_trendyol'
+index_name = 'trendyol_trendyol2'
 
 mappings = {
     "mappings": {
@@ -30,7 +30,7 @@ mappings = {
                 }
             },
             "Price": {
-                "type": "keyword"
+                "type": "float"
             },
             "Title": {
                 "type": "text",
@@ -48,7 +48,17 @@ mappings = {
 if not es.indices.exists(index=index_name):
     es.indices.create(index=index_name, body=mappings)
 
+def clean_price(price_str):
+    price_str = price_str.replace('TL', '')
+    price_str = price_str.replace('.', '')
+    price_str = price_str.strip()
+    price_str = price_str.replace('"', '')
+    price_str = price_str.replace(',', '.')
+    return float(price_str)
+
+
 def csv_to_elasticsearch(df, index_name):
+    df['Price'] = df['Price'].apply(clean_price)
     actions = [
         {
             "_index": index_name,
