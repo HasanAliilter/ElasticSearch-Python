@@ -6,7 +6,7 @@ es = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
 csv_file_path = '../web_scraping/Trendyol_Trendyol.csv'
 df = pd.read_csv(csv_file_path)
 
-index_name = 'trendyollololo'
+index_name = 'trendyol_trendyol'
 
 mappings = {
     "mappings": {
