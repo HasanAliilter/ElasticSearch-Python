@@ -1,70 +1,238 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elasticsearch Trendyol Arama</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            margin: auto;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow: auto;
+            background: linear-gradient(315deg, rgb(21, 1, 51) 3%, rgb(24, 60, 97) 38%, rgb(20, 100, 95) 68%, rgb(56, 22, 62) 98%);
+            animation: gradient 50s ease infinite;
+            background-size: 400% 400%;
+            background-attachment: fixed;
         }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 0%;
+            }
+
+            50% {
+                background-position: 100% 100%;
+            }
+
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+
         .container {
-            width: 50%;
-            margin: 0 auto;
-            text-align: center;
-            padding-top: 50px;
+            max-width: 100%;
+            height: 100vh;
+            overflow-y: scroll;
         }
-        .search-bar, .price-input {
-            width: 80%;
-            padding: 10px;
-            font-size: 16px;
-            margin-bottom: 10px;
-            display: inline-block;
+
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: baseline;
+            padding: 1rem 0;
+            background: linear-gradient(to left, #1c3977, #013464, #1c3977);
         }
-        .search-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            vertical-align: top;
+
+        .navbar-title {
+            font-size: 1.5rem;
+            font-weight: 500;
+            color: #fff;
+            margin-left: 4rem;
         }
-        .results {
-            margin-top: 20px;
+
+        .search-field {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2rem;
+            padding: 1rem;
         }
-        .result-item {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin: 5px 0;
+
+        .search-bar {
             position: relative;
+            border: none;
+            background: #b1b1b1;
+            width: 5rem;
+            padding: 1rem 2rem;
+            border-radius: 2rem;
+            transition: all 200ms ease-in-out;
+            text-indent: 1rem;
         }
-        .action-buttons {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+
+        .search-bar:focus {
+            border: none;
+            outline: none;
+            width: 60rem;
+            box-shadow: 0 0 10px 0 #8f8f8f9d;
+            color: #262525;
         }
-        .add-data-link {
-            display: inline-block;
-            margin-left: 20px;
-            font-size: 16px;
-            text-decoration: none;
-            color: blue;
-            vertical-align: top;
+
+        .search-button {
+            margin-left: -3rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+            z-index: 1;
         }
+
+        .search-button i {
+            font-size: 1rem;
+            color: #013464;
+        }
+
+        .price-product {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            row-gap: 1rem;
+            margin: 0 4rem;
+            padding: 1rem;
+        }
+
+        .price-input {
+            border: none;
+            background: #b1b1b1;
+            width: 10%;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            transition: all 200ms ease-in-out;
+            text-indent: 1rem;
+        }
+
+        .price-input::-webkit-inner-spin-button,
+        .price-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+        }
+
+        .price-input:focus {
+            border: none;
+            outline: none;
+            box-shadow: 0 0 10px 0 #d4d5d69e;
+            color: #373636;
+        }
+
+        .price-text {
+            font-weight: 500;
+            font-size: medium;
+            color: #fff;
+        }
+
+        .result-container {
+            right: 0;
+            display: flex;
+            justify-content: space-evenly;
+        }
+
+        .results {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 2rem;
+            width: 100%;
+        }
+
+        .result-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #d4d5d62e;
+            width: calc(33% - 8rem);
+            height: 30rem;
+            margin: 1rem;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .result-item:hover {
+            transform: scale(1.01);
+        }
+
         .result-image {
-            max-width: 100px;
-            max-height: 100px;
-            display: block;
-            margin: 0 auto 10px;
+            width: 75%;
+            height: 20rem;
+            image-orientation: flip;
+            border-radius: 0.5rem;
+        }
+
+        .result-content {
+            text-align: center;
+        }
+
+        .result-content p {
+            margin: 0.5rem 0;
+            text-align: center;
+            color: #fff;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            width: 75%;
+        }
+
+        .delete-button,
+        .update-button {
+            border: none;
+            background: #0f2131c8;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 300ms ease-in-out;
+        }
+
+        .delete-button:hover,
+        .update-button:hover {
+            background: #1c3977;
         }
     </style>
+    <script src="https://kit.fontawesome.com/2522cef732.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
     <div class="container">
-        <h1>Trendyol Arama</h1>
-        <input type="text" id="searchQuery" class="search-bar" placeholder="Aramak istediğiniz kelimeyi girin..." onkeydown="if (event.keyCode === 13) { event.preventDefault(); performSearch(); }">
-        <input type="number" id="minPrice" class="price-input" placeholder="Min Fiyat" onkeydown="if (event.keyCode === 13) { event.preventDefault(); performSearch(); }">
-        <input type="number" id="maxPrice" class="price-input" placeholder="Max Fiyat" onkeydown="if (event.keyCode === 13) { event.preventDefault(); performSearch(); }">
-        <button onclick="performSearch()" class="search-button">Ara</button>
-        <div class="results" id="results"></div>
+        <div class="navbar">
+            <h1 class="navbar-title">ElasticSearch Trendyol Arama</h1>
+        </div>
+        <div class="search-field">
+            <input type="text" id="searchQuery" class="search-bar" placeholder="Aradığınız ürün veya markayı yazınız"
+                onkeydown="if (event.keyCode === 13) { event.preventDefault(); performSearch(); }">
+            <button onclick="performSearch()" class="search-button"><i
+                    class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+        <div class="price-product">
+            <p class="price-text">Fiyat</p>
+            <input type="number" id="minPrice" class="price-input" placeholder="Min Fiyat"
+                onkeydown="if (event.keyCode === 13) { event.preventDefault(); performSearch(); }">
+            <input type="number" id="maxPrice" class="price-input" placeholder="Max Fiyat"
+                onkeydown="if (event.keyCode === 13) { event.preventDefault(); performSearch(); }">
+        </div>
+
+        <div class="result-container">
+            <div class="results" id="results"></div>
+        </div>
     </div>
 
     <script>
@@ -86,14 +254,16 @@
                             const itemDiv = document.createElement('div');
                             itemDiv.className = 'result-item';
                             itemDiv.innerHTML = `
-                                <img src="${item.Image}" alt="${item.Name}" class="result-image">
-                                <p><strong>Price:</strong> ${item.Price}</p>
-                                <p><strong>Name:</strong> ${item.Name}</p>
-                                <p><strong>Title:</strong> ${item.Title}</p>
-                                <div class="action-buttons">
-                                    <button onclick="deleteData('${item._id}')" class="delete-button">Sil</button>
-                                    <a href="/update/${item._id}" class="update-button">Güncelle</a>
-                                </div>
+                                    <img src="${item.Image}" alt="${item.Name}" class="result-image">
+                                    <div class="result-content">
+                                        <p> ${item.Title}</p>
+                                        <p> ${item.Name}</p>
+                                        <p> ${item.Price}</p>
+                                    </div>
+                                    <div class="action-buttons">
+                                        <button onclick="deleteData('${item._id}')" class="delete-button">Sil</button>
+                                        <a href="/update/${item._id}" class="update-button">Güncelle</a>
+                                    </div>
                             `;
                             resultsDiv.appendChild(itemDiv);
                         });
@@ -123,4 +293,5 @@
         }
     </script>
 </body>
+
 </html>

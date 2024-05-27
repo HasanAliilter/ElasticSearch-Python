@@ -1,19 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Veri Güncelle</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
+        body {
+            margin: auto;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow: auto;
+            background: linear-gradient(315deg, rgb(21, 1, 51) 3%, rgb(24, 60, 97) 38%, rgb(20, 100, 95) 68%, rgb(56, 22, 62) 98%);
+            animation: gradient 50s ease infinite;
+            background-size: 400% 400%;
+            background-attachment: fixed;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 0%;
+            }
+
+            50% {
+                background-position: 100% 100%;
+            }
+
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+
+        .container {
+            max-width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .update-form {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 40rem;
+            display: flex;
+            flex-direction: column;
+            row-gap: 1rem;
+        }
+
+        .update-form label {
+            font-weight: bold;
+            color: #013464;
+        }
+
+        .update-form input[type="text"] {
+            border: none;
+            background: #b1b1b1;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            transition: all 200ms ease-in-out;
+            width: 100%;
+        }
+
+        .update-form input[type="text"]:focus {
+            border: none;
+            outline: none;
+            box-shadow: 0 0 10px 0 #d4d5d69e;
+            color: #373636;
+        }
+
+        .update-form input[type="submit"] {
+            border: none;
+            background: #1c3977;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 200ms ease-in-out;
+        }
+
+        .update-form input[type="submit"]:hover {
+            background: #013464;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Veri Güncelle</h1>
-    <form action="/update/{{ id }}" method="POST">
-        <label for="Price">Price:</label>
-        <input type="text" id="Price" name="Price" value="{{ data.Price }}"><br>
-        <label for="Name">Name:</label>
-        <input type="text" id="Name" name="Name" value="{{ data.Name }}"><br>
-        <label for="Title">Title:</label>
-        <input type="text" id="Title" name="Title" value="{{ data.Title }}"><br>
-        <input type="submit" value="Güncelle">
-    </form>
+    <div class="container">
+        <form action="/update/{{ id }}" method="POST" class="update-form">
+            <h1>Veri güncelle</h1>
+            <label for="Price">Price:</label>
+            <input type="text" id="Price" name="Price" value="{{ data.Price }}">
+            <label for="Name">Name:</label>
+            <input type="text" id="Name" name="Name" value="{{ data.Name }}">
+            <label for="Title">Title:</label>
+            <input type="text" id="Title" name="Title" value="{{ data.Title }}">
+            <input type="submit" value="Güncelle">
+        </form>
+    </div>
+
 </body>
+
 </html>
