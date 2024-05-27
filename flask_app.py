@@ -54,27 +54,6 @@ def index():
     results = search_trendyol_index(es, "")
     return render_template('index.html', results=results)
 
-@app.route('/add_data')
-def add_data_page():
-    return render_template('add_data.html')
-
-@app.route('/add', methods=['POST'])
-def add_data():
-    data = request.json
-    es = connect_elasticsearch()
-    if not es:
-        return jsonify({"error": "Elasticsearch bağlantısı kurulamadı."}), 500
-
-    try:
-        response = es.index(index="trendyol_trendyol", document=data)
-        if 'result' in response and response['result'] == 'created':
-            return jsonify({"message": "Veri başarıyla eklendi.", "response": response}), 200
-        else:
-            return jsonify({"error": "Veri eklenirken beklenmedik bir yanıt alındı.", "response": response}), 500
-    except Exception as e:
-        print(f"Veri eklerken bir hata oluştu: {e}")
-        return jsonify({"error": f"Veri eklenirken bir hata oluştu: {e}"}), 500
-
 
 @app.route('/search', methods=['GET'])
 def search():
@@ -82,7 +61,6 @@ def search():
     min_price = request.args.get('minPrice')
     max_price = request.args.get('maxPrice')
 
-    # Convert min_price and max_price to floats if they are provided
     min_price = float(min_price) if min_price else None
     max_price = float(max_price) if max_price else None
 
@@ -99,6 +77,25 @@ def search():
 
     return jsonify(results), 200
 
+@app.route('/add_data')
+def add_data_page():
+    return render_template('add_data.html')
+
+@app.route('/add', methods=['POST'])
+def add_data():
+    data = request.json
+    es = connect_elasticsearch()
+    if not es:
+        return jsonify({"error": "Elasticsearch bağlantısı kurulamadı."}), 500
+
+    try:
+        response = es.index(index="trendyol_trendyol", document=data)
+        return jsonify({"message": "Veri başarıyla eklendi."}), 200
+    except Exception as e:
+        print(f"Veri eklerken bir hata oluştu: {e}")
+        return jsonify({"error": f"Veri eklerken bir hata oluştu: {e}"}), 500
+
+
 @app.route('/delete/<id>', methods=['DELETE'])
 def delete_data(id):
     es = connect_elasticsearch()
@@ -107,13 +104,11 @@ def delete_data(id):
 
     try:
         response = es.delete(index="trendyol_trendyol", id=id)
-        if 'result' in response and response['result'] == 'deleted':
-            return jsonify({"message": "Veri başarıyla silindi.", "response": response}), 200
-        else:
-            return jsonify({"error": "Veri silinirken beklenmedik bir yanıt alındı.", "response": response}), 500
+        return jsonify({"message": "Veri başarıyla silindi."}), 200
     except Exception as e:
         print(f"Veri silinirken bir hata oluştu: {e}")
         return jsonify({"error": f"Veri silinirken bir hata oluştu: {e}"}), 500
+
 
 @app.route('/update/<id>', methods=['GET', 'POST'])
 def update_data(id):

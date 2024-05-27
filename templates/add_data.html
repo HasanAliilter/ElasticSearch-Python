@@ -66,6 +66,7 @@
                     messageDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
                 } else {
                     messageDiv.innerHTML = `<p style="color: green;">${data.message}</p>`;
+                    window.location.href = '/';
                 }
             })
             .catch(error => {
