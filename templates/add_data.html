@@ -1,44 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elasticsearch Veri Ekle</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            margin: auto;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            overflow: auto;
+            background: linear-gradient(315deg, rgb(21, 1, 51) 3%, rgb(24, 60, 97) 38%, rgb(20, 100, 95) 68%, rgb(56, 22, 62) 98%);
+            animation: gradient 50s ease infinite;
+            background-size: 400% 400%;
+            background-attachment: fixed;
         }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 0%;
+            }
+
+            50% {
+                background-position: 100% 100%;
+            }
+
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+
         .container {
-            width: 50%;
-            margin: 0 auto;
-            text-align: center;
-            padding-top: 50px;
+            max-width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
-        .input-field {
+
+        .update-form {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 40rem;
+            display: flex;
+            flex-direction: column;
+            row-gap: 1rem;
+        }
+
+        .update-form label {
+            font-weight: bold;
+            color: #013464;
+        }
+
+        .update-form input[type="text"] {
+            border: none;
+            background: #b1b1b1;
+            padding: 0.5rem 1rem;
+            border-radius: 0.75rem;
+            transition: all 200ms ease-in-out;
             width: 100%;
-            padding: 10px;
-            font-size: 16px;
-            margin-bottom: 10px;
         }
-        .submit-button {
-            padding: 10px 20px;
-            font-size: 16px;
+
+        .update-form input[type="text"]:focus {
+            border: none;
+            outline: none;
+            box-shadow: 0 0 10px 0 #d4d5d69e;
+            color: #373636;
+        }
+
+        .button-side {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: right;
+        }
+
+        .update-form button {
+            border: none;
+            background: #1c3977;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
             cursor: pointer;
+            transition: background 200ms ease-in-out;
+            width: 5rem;
+        }
+
+        .update-form button:hover {
+            background: #013464;
+        }
+
+        .update-form button:disabled {
+            background: #9999b9;
+            cursor: not-allowed;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <h1>Trendyol Verisi Ekle</h1>
-        <input type="text" id="price" class="input-field" placeholder="Fiyat">
-        <input type="text" id="name" class="input-field" placeholder="Ürün Adı">
-        <input type="text" id="title" class="input-field" placeholder="Satıcı">
-        <input type="text" id="image" class="input-field" placeholder="Resim Linki">
-        <button onclick="addData()" class="submit-button">Ekle</button>
-        <div id="message"></div>
+        <form class="update-form" id="update-form">
+            <h1>Trendyol Verisi Ekle</h1>
+            <label for="price">Fiyat:</label>
+            <input type="text" id="price" name="price" placeholder="Fiyat">
+            <label for="name">Ürün Adı:</label>
+            <input type="text" id="name" name="name" placeholder="Ürün Adı">
+            <label for="title">Satıcı:</label>
+            <input type="text" id="title" name="title" placeholder="Satıcı">
+            <label for="image">Resim Linki:</label>
+            <input type="text" id="image" name="image" placeholder="Resim Linki">
+            <div class="button-side">
+                <button type="button" id="submit-button" onclick="addData()" disabled>Ekle</button>
+            </div>
+            <div id="message"></div>
+        </form>
     </div>
 
     <script>
+        function checkInputs() {
+            const price = document.getElementById('price').value.trim();
+            const name = document.getElementById('name').value.trim();
+            const title = document.getElementById('title').value.trim();
+            const image = document.getElementById('image').value.trim();
+            const submitButton = document.getElementById('submit-button');
+
+            if (price && name && title && image) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        }
+
+        document.getElementById('price').addEventListener('input', checkInputs);
+        document.getElementById('name').addEventListener('input', checkInputs);
+        document.getElementById('title').addEventListener('input', checkInputs);
+        document.getElementById('image').addEventListener('input', checkInputs);
+
+
         function addData() {
             const price = document.getElementById('price').value;
             const name = document.getElementById('name').value;
@@ -59,20 +168,21 @@
                 },
                 body: JSON.stringify(data)
             })
-            .then(response => response.json())
-            .then(data => {
-                const messageDiv = document.getElementById('message');
-                if (data.error) {
-                    messageDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
-                } else {
-                    messageDiv.innerHTML = `<p style="color: green;">${data.message}</p>`;
-                    window.location.href = '/';
-                }
-            })
-            .catch(error => {
-                console.error('Veri eklerken bir hata oluştu:', error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    const messageDiv = document.getElementById('message');
+                    if (data.error) {
+                        messageDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
+                    } else {
+                        messageDiv.innerHTML = `<p style="color: green;">${data.message}</p>`;
+                        window.location.href = '/';
+                    }
+                })
+                .catch(error => {
+                    console.error('Veri eklerken bir hata oluştu:', error);
+                });
         }
     </script>
 </body>
+
 </html>
