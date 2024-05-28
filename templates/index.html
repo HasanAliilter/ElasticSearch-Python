@@ -46,8 +46,8 @@
         .navbar {
             display: flex;
             align-items: center;
-            justify-content: baseline;
-            padding: 1rem 0;
+            justify-content: space-between;
+            padding: 1rem 4rem;
             background: linear-gradient(to left, #1c3977, #013464, #1c3977);
         }
 
@@ -207,6 +207,33 @@
         .update-button:hover {
             background: #1c3977;
         }
+
+        .data-add {
+            margin-right: 4rem;
+        }
+
+        .add-data-link {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 700ms ease-out;
+        }
+
+        .add-data-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            display: block;
+            margin-top: 5px;
+            right: 0;
+            background: #fff;
+            transition: width 0.7s ease-out;
+        }
+
+        .add-data-link:hover::after {
+            width: 20%;
+        }
     </style>
     <script src="https://kit.fontawesome.com/2522cef732.js" crossorigin="anonymous"></script>
 </head>
@@ -215,6 +242,9 @@
     <div class="container">
         <div class="navbar">
             <h1 class="navbar-title">ElasticSearch Trendyol Arama</h1>
+            <div class="data-add">
+                <a href="/add_data" class="add-data-link">Veri ekle</a>
+            </div>
         </div>
         <div class="search-field">
             <input type="text" id="searchQuery" class="search-bar" placeholder="Aradığınız ürün veya markayı yazınız"
@@ -223,6 +253,7 @@
                     class="fa-solid fa-magnifying-glass"></i></button>
         </div>
         <a href="/add_data" class="add-data-link">Veri Ekle</a>
+
         <div class="price-product">
             <p class="price-text">Fiyat</p>
             <input type="number" id="minPrice" class="price-input" placeholder="Min Fiyat"
@@ -230,6 +261,7 @@
             <input type="number" id="maxPrice" class="price-input" placeholder="Max Fiyat"
                 onkeydown="if (event.keyCode === 13) { event.preventDefault(); performSearch(); }">
         </div>
+
 
         <div class="result-container">
             <div class="results" id="results"></div>
